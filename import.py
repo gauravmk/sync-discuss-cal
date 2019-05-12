@@ -9,6 +9,7 @@ from ics import Calendar
 from pick import pick
 import requests
 import signal
+import html
 import arrow
 
 # If modifying these scopes, delete the file token.pickle.
@@ -49,9 +50,9 @@ def fetch_discuss_calendar():
 
 def transform_to_google_event(discuss_event):
   return {
-      'summary': discuss_event.name,
+      'summary': html.unescape(discuss_event.name),
       'location': discuss_event.location,
-      'description': discuss_event.description,
+      'description': html.unescape(discuss_event.description),
       'start': {
           'dateTime': discuss_event.begin.format(fmt="YYYY-MM-DDTHH:mm:ssZZ"),
           'timeZone': 'America/Los_Angeles',
