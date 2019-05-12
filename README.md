@@ -1,6 +1,6 @@
 # Sync discuss calendars with google calendar
 
-Provides a unidirectional sync from discuss calendars to an existing google calendar. It pulls all discuss events from an ics file and generates google events on a regular basis. It protects against double generating events.
+Provides a unidirectional sync from discuss calendars to an existing google calendar. It pulls all discuss events from an ics file and generates google events on a regular basis.
 
 ## Setup
 
