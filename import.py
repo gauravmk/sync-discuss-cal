@@ -72,7 +72,7 @@ def dedupe_key(gevent):
 
 
 calendarId = None
-@sched.scheduled_job('cron', second="*/5")
+@sched.scheduled_job('cron', minute="*/5")
 def sync_calendar():
     if calendarId == None:
         return
