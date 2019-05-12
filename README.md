@@ -14,7 +14,7 @@ Follow step 1 from here: https://developers.google.com/calendar/quickstart/pytho
 
 Discuss creds are set via environment variables. Specifically `DISCUSS_URL` and `DISCUSS_TOKEN`.
 
-`DISCUSS_URL` is the base url for your discuss (e.g. http://discuss.eastbayforeveryone.org)
+`DISCUSS_URL` is the base url for your discuss (e.g. `http://discuss.eastbayforeveryone.org`)
 `DISCUSS_TOKEN` is a personal auth token. This is pretty jank but the easiest way I could find to do this is to snatch the cookies from your activity on discuss. You're looking for the "_t" cookie
 
 ![Screen Shot 2019-05-11 at 6 04 19 PM](https://user-images.githubusercontent.com/16271389/57576587-e82f6200-7417-11e9-9164-25947e94bb72.png)
