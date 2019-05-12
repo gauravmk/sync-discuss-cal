@@ -2,6 +2,8 @@
 
 Provides a unidirectional sync from discuss calendars to an existing google calendar. It pulls all discuss events from an ics file and generates google events on a regular basis.
 
+![calsync](https://user-images.githubusercontent.com/16271389/57576778-faf86580-741c-11e9-834c-4601681e24fc.gif)
+
 ## Setup
 
 You will need google api credentials and discuss credentials.
