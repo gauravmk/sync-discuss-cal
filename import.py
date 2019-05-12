@@ -42,7 +42,7 @@ def handle_google_auth():
 
 # Helpers
 def fetch_discuss_calendar():
-    url = os.environ['DISCUSS_URL']
+    url = "{}/calendar.ics?time_zone=America/Los_Angeles".format(os.environ['DISCUSS_URL'])
     cookies = { "_t": os.environ['DISCUSS_TOKEN'] }
     resp = requests.get(url, cookies=cookies)
     return Calendar(resp.text)
