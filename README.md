@@ -4,6 +4,8 @@ Provides a unidirectional sync from discuss calendars to an existing google cale
 
 ![calsync](https://user-images.githubusercontent.com/16271389/57576778-faf86580-741c-11e9-834c-4601681e24fc.gif)
 
+NOTE: That setup with picking the calendar just happens once on app start. From there the program runs indefinitely continuously syncing every 5 minutes.
+
 ## Setup
 
 You will need google api credentials and discuss credentials.
