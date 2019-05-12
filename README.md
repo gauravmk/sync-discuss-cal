@@ -29,7 +29,20 @@ export DISCUSS_TOKEN=<discuss token>
 
 ### Running the program
 
-Once you've got the above setup. Simply run `python import.py`. The first thing it'll do is prompt you to login to google calendar. On successful login it'll show you a list of all your calendars. Pick the one you want to sync discuss events to. From there the program will just run indefinitely syncing on a regular schedule (default every 5 minutes)
+I recommend installing dependencies and running within virtualenv. In which case follow these steps:
+
+```
+$ python3 -m venv venv
+$ source venv/bin/activate
+```
+
+Whether you're in a virtualenv or not you can install dependencies via:
+
+```
+$ pip install -r requirements.txt
+```
+
+Once you've finished the setup, simply run `python import.py`. The first thing it'll do is prompt you to login to google calendar. On successful login it'll show you a list of all your calendars. Pick the one you want to sync discuss events to. From there the program will just run indefinitely syncing on a regular schedule (default every 5 minutes)
 
 ## Known Problems:
 
