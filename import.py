@@ -2,7 +2,7 @@ import datetime
 import pickle
 import os.path
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
+from oauth2client.client import OAuth2WebServerFlow
 from google.auth.transport.requests import Request
 from apscheduler.schedulers.background import BackgroundScheduler
 from ics import Calendar
@@ -11,11 +11,13 @@ import requests
 import signal
 import html
 import arrow
+from redis import Redis
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events']
 sched = BackgroundScheduler()
 
+redis = Redis.from_url(os.getenv('REDIS_URL') or 'redis://')
 
 # This is copy/pasted from https://developers.google.com/calendar/quickstart/python#step_3_set_up_the_sample
 def handle_google_auth():
@@ -23,25 +25,45 @@ def handle_google_auth():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
+    token = redis.get(redis_key('token'))
+    if token:
+      creds = pickle.loads(token)
     # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
+    if not creds:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server()
+            flow = OAuth2WebServerFlow(client_id=os.environ['GOOGLE_CLIENT_ID'],
+                                       client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+                                       scope=SCOPES,
+                                       redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+            auth_uri = flow.step1_get_authorize_url()
+            print(auth_uri)
+            code = input("code: ")
+            creds = flow.step2_exchange(code)
+
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
+        pickled = pickle.dumps(creds)
+        redis.set(redis_key('token'), pickled)
 
     return build('calendar', 'v3', credentials=creds)
 
 
+def get_google_calendar_id():
+    cal_id = redis.get(redis_key('calendar_id'))
+    if cal_id:
+      return cal_id.decode()
+    calendars = service.calendarList().list().execute()
+    option, index = pick([c['summary'] for c in calendars['items']], 'Pick the correct calendar: ')
+    cal_id = calendars['items'][index]['id']
+    redis.set(redis_key('calendar_id'), cal_id)
+    return cal_id
+
+
 # Helpers
+def redis_key(suffix):
+  return 'discuss_cal_sync:{}'.format(suffix)
+
 def fetch_discuss_calendar():
     url = "{}/calendar.ics?time_zone=America/Los_Angeles".format(os.environ['DISCUSS_URL'])
     cookies = { "_t": os.environ['DISCUSS_TOKEN'] }
@@ -72,9 +94,9 @@ def dedupe_key(gevent):
     ])
 
 
-calendarId = None
 @sched.scheduled_job('cron', minute="*/5")
 def sync_calendar():
+    calendarId = get_google_calendar_id()
     if calendarId == None:
         return
 
@@ -103,10 +125,8 @@ def sync_calendar():
 if __name__ == '__main__':
     # Auth with google and pick which google calendar to write to
     service = handle_google_auth()
-    calendars = service.calendarList().list().execute()
-    option, index = pick([c['summary'] for c in calendars['items']], 'Pick the correct calendar: ')
-    calendarId = calendars['items'][index]['id']
-
+    # Force a fetch of the google calendar to trigger selection if needed
+    get_google_calendar_id()
     sched.start() 
     # Sleep indefinitely
     while True:
