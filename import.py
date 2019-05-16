@@ -22,9 +22,8 @@ redis = Redis.from_url(os.getenv('REDIS_URL') or 'redis://')
 # This is copy/pasted from https://developers.google.com/calendar/quickstart/python#step_3_set_up_the_sample
 def handle_google_auth():
     creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    # we store the user's access and refresh tokens in redis and is added automatically 
+    # when the authorization flow completes for the first time.
     token = redis.get(redis_key('token'))
     if token:
       creds = pickle.loads(token)
