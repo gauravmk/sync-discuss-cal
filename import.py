@@ -95,6 +95,7 @@ def dedupe_key(gevent):
 
 @sched.scheduled_job('cron', minute="*/5")
 def sync_calendar():
+    print("Starting sync")
     calendarId = get_google_calendar_id()
     if calendarId == None:
         return
@@ -124,9 +125,16 @@ def sync_calendar():
 if __name__ == '__main__':
     # Auth with google and pick which google calendar to write to
     service = handle_google_auth()
+
     # Force a fetch of the google calendar to trigger selection if needed
     get_google_calendar_id()
+
+    # Kick off an immediate sync
+    sync_calendar()
+
+    # Start the cron
     sched.start() 
+
     # Sleep indefinitely
     while True:
         signal.pause()
