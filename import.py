@@ -111,8 +111,8 @@ def sync_calendar():
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     events_from_google = {
         dedupe_key(e): e
-        for e in service.events().list(calendarId=calendarId, timeMin=now,
-                                       singleEvents=True).execute()['items']
+        for e in service.events().list(calendarId=calendarId, timeMin=now).execute()['items']
+        if e['status'] == 'confirmed'
     }
 
     # Diff the two to prevent creating dupe calendar events and add any new events found to gcal
