@@ -117,9 +117,11 @@ def sync_calendar():
 
     # Diff the two to prevent creating dupe calendar events and add any new events found to gcal
     diff = set(events_from_discuss) - set(events_from_google)
+    print("Starting cal adds")
     for k in diff:
         print("Adding calendar event")
-        service.events().insert(calendarId=calendarId, body=events_from_discuss[k]).execute()
+        print("Dry run for now")
+        #service.events().insert(calendarId=calendarId, body=events_from_discuss[k]).execute()
 
 
 if __name__ == '__main__':
