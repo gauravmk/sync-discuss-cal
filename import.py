@@ -87,7 +87,7 @@ def transform_to_google_event(discuss_event):
 def dedupe_key(gevent):
     return "::".join([
         gevent['summary'],
-        gevent['description'], 
+        gevent.get('description', ''),
         gevent['start']['dateTime'], 
         gevent['end']['dateTime'],
     ])
