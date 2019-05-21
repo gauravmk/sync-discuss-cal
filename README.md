@@ -7,46 +7,30 @@ Provides a unidirectional sync from discuss calendars to an existing google cale
 NOTE: That setup with picking the calendar just happens once on app start. From there the program runs indefinitely continuously syncing every 5 minutes.
 
 ## Setup
+These are the env vars that need to be set:
 
-You will need google api credentials and discuss credentials.
-
-### Google API credentials
-
-Follow step 1 from here: https://developers.google.com/calendar/quickstart/python#step_1_turn_on_the. It tells you to download a `credentials.json` file. Make sure that file is in the same directory as `import.py`
+![setup_img](https://user-images.githubusercontent.com/16271389/57946127-6f555d80-7890-11e9-9d53-a495682feea7.png)
 
 ### Discuss credentials
+DISCUSS_URL is the base url for your discuss (e.g. http://discuss.eastbayforeveryone.org)
 
-Discuss creds are set via environment variables. Specifically `DISCUSS_URL` and `DISCUSS_TOKEN`.
+DISCUSS_TOKEN is a personal auth token. This is pretty jank but the easiest way I could find to do this is to snatch the cookies from your activity on discuss. You're looking for the "_t" cookie
 
-`DISCUSS_URL` is the base url for your discuss (e.g. `http://discuss.eastbayforeveryone.org`)
+![discuss_creds](https://user-images.githubusercontent.com/16271389/57576587-e82f6200-7417-11e9-9164-25947e94bb72.png)
 
-`DISCUSS_TOKEN` is a personal auth token. This is pretty jank but the easiest way I could find to do this is to snatch the cookies from your activity on discuss. You're looking for the "_t" cookie
+### Google API credentials
+Follow step 1 from here: https://developers.google.com/calendar/quickstart/python#step_1_turn_on_the. You can grab a GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET from there
 
-![Screen Shot 2019-05-11 at 6 04 19 PM](https://user-images.githubusercontent.com/16271389/57576587-e82f6200-7417-11e9-9164-25947e94bb72.png)
+### Redis
+The heroku redis add-on automatically sets REDIS_URL. The other add-ons call the env var something else but I think it allows you to attach the add on with a custom env var name.
 
-Then just run
+## Kicking off
+The first time the program runs, it requires some configuration (auth with google + picking the calendar to sync to). The best way to do that is to run heroku run python import.py -a <app_name>.
 
-```
-export DISCUSS_URL=<discuss url>
-export DISCUSS_TOKEN=<discuss token>
-```
+It'll spit out an auth url. Navigate to it and go through the google auth flow. You'll need to paste the token the browser gives you back into the terminal.
 
-### Running the program
+From there, select the calendar you want to sync to and it will run an immediate sync. You can now kill this session. Scaling up the sync proc will take care of syncing indefinitely. Once you scale that up, you're done!
 
-I recommend installing dependencies and running within virtualenv. In which case follow these steps:
-
-```
-$ python3 -m venv venv
-$ source venv/bin/activate
-```
-
-Whether you're in a virtualenv or not you can install dependencies via:
-
-```
-$ pip install -r requirements.txt
-```
-
-Once you've finished the setup, simply run `python import.py`. The first thing it'll do is prompt you to login to google calendar. On successful login it'll show you a list of all your calendars. Pick the one you want to sync discuss events to. From there the program will just run indefinitely syncing on a regular schedule (default every 5 minutes)
 
 ## Known Problems:
 
